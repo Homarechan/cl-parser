@@ -1,13 +1,24 @@
-use std::os::unix::process::parent_id;
+use std::{error::Error, os::unix::process::parent_id};
 
-use cl_parser::parser::parse::{ParseMode, parse};
+use cl_parser::parser::{
+    self,
+    parse::{parse, ParseMode},
+};
 
 fn main() {
     loop {
         let mut s = String::new();
         std::io::stdin().read_line(&mut s).ok();
         let parser = parse(s.clone(), ParseMode::Fuzzy);
-        dbg!(parser.unwrap());
-    }
 
+        match parser {
+            Ok(c) => {
+                dbg!(c);
+            }
+            Err(parser::parse::Error::EmptySource) => {
+                println!("Empty");
+            }
+            _ => unreachable!(),
+        };
+    }
 }
